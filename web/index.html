@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+.btn_cl {     margin-top: 5px;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    margin-left: 5px;
+    }
+
+
+#sound_buttons {
+   min-width: 30em; max-width: 46em;
+}
+
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+
+var hostname = window.location.host
+
+function btnClick(x)
+{
+  console.log(x);
+  $.get("http://"+hostname+"/api/play/"+x+"");
+}
+
+function searchSong(value){
+    console.log(value);
+
+    var matches = [];
+    var searchEles = document.getElementById("sound_buttons").children;
+    for(var i = 0; i < searchEles.length; i++) {
+        if(searchEles[i].value.includes(value)) {
+          console.log("found");
+          $( searchEles[i] ).show();
+        }
+        else{
+          $( searchEles[i] ).hide();
+        }
+    }
+
+}
+
+$.getJSON("http://"+hostname+"/api/list/",function(result){
+  $.each(result, function(i, field){
+    console.log(field)
+    var btn_text = field.replace(/\.[^/.]+$/, "")
+    $("#sound_buttons").append('<button class="ui-btn btn_cl" value="'+field+'" onclick="btnClick(this.value)" >'+btn_text+'</input> ');
+      });
+    });
+
+$(document).ready(function(){
+    $('input.clear').click(function() {
+      $('input.input').val('');
+    });
+
+    $('input.input').on('keyup change', function() {
+      $( "button[value|='"+$(this).val()+"']" ).css( "border", "3px dotted green" );
+      searchSong($(this).val())
+    });
+  });
+</script>
+</head>
+<body>
+
+<div id="search_bar">
+  <input name="input" type="text" maxlength="512" id="input" class="searchField searchTxt input"/>
+  <span class="ui-icon  ui-icon-close"> </span>
+</div>
+
+<div id="sound_buttons">
+</div>
+
+
+</body>
+</html>
